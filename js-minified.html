@@ -1,16 +1,8 @@
 <!DOCTYPE html>
 <html>
-<body>
+<body style="font-family:Verdana;display:flex;flex-flow:column;align-items:center;background:#8499B1;">
   <style>
-    body {
-      font-family: Verdana;
-      display:flex;
-      flex-flow:column;
-      align-items:center;
-      padding-top: 80px;
-      background: #8499B1;
-    }
-    #gd {
+    #g {
       display: grid;
     }
     .c {
@@ -18,14 +10,42 @@
       height: 25px;
       border: 1px solid #A5C4D4;
     }
-    .alive {background: #A5C4D4;}
+    .a {background: #A5C4D4;}
+    #t, #m {
+      pointer-events: none;
+      position: absolute;
+      width: 800px;
+      height: 800px;
+    }
+    #t {
+      backdrop-filter: blur(10px);
+      mask: url(#mask);
+      margin: -50px;
+    }
 
   </style>
-  <h1>conway's game of life :)</h1>
-  <div id="gd"></div>
+  <h1 style="z-index: 9;">conway's game of life :)</h1>
+  <div>
+    <div id="t"></div>
+    <div id="g"></div>
+  </div>
 
-  <script>
-  var audio=new Audio("data:audio/wav;base64,UklGRkQAAABXQVZFZm10IBAAAAABAAEAiBUAAIgVAAABAAgAZGF0YSAAAAB/bZR2dpJ5dH+bZX+Xan+KiG5/jXl6f4l9en+Cgnx/fw==");const rs=20,cs=20,gd=document.getElementById("gd");var md=!1;gd.style.gridTemplateRows="repeat(20, 30px)",gd.style.gridTemplateColumns="repeat(20, 30px)";const cells=[];for(let row=0;row<20;row++){let e=[];for(let t=0;t<20;t++){let a=document.createElement("div");a.classList.add("c"),a.addEventListener("click",()=>{a.classList.toggle("alive")}),a.dataset.r=row,a.dataset.c=t,gd.appendChild(a),e.push(a)}cells.push(e)}function hb(e){e.target.dataset.r&&e.target.dataset.c&&(e.target.classList.add("alive"),audio.pause(),audio.currentTime=0,audio.play())}function ng(){let e=cells.map((e,t)=>e.map((e,a)=>{let s=e.classList.contains("alive"),l=ga(t,a);return!!s&&(2===l||3===l)||!s&&3===l}));cells.forEach((t,a)=>t.forEach((t,s)=>{e[a][s]?t.classList.add("alive"):t.classList.remove("alive")}))}function ga(e,t){let a=0;for(let s of[-1,0,1])for(let l of[-1,0,1]){if(0===s&&0===l)continue;let d=e+s,i=t+l;d>=0&&d<20&&i>=0&&i<20&&cells[d][i].classList.contains("alive")&&a++}return a}gd.addEventListener("mousedown",e=>{md=!0,hb(e)}),gd.addEventListener("mousemove",e=>{md&&hb(e)}),gd.addEventListener("mouseup",()=>{md=!1}),setInterval(ng,500);
+  <svg id="m">
+  <defs>
+    <radialGradient id="gr">
+      <stop offset="20%" stop-color="black" />
+      <stop offset="99%" stop-color="white" />
+    </radialGradient>
+    <mask id="mask" width="100%" height="100%">
+      <rect width="100%" height="100%" fill="white"/>
+      <circle id="mc" r="200" fill="url('#gr')"/>
+    </mask>
+  </defs>
+</svg>
+
+
+<script>
+  var au=new Audio("data:audio/wav;base64,UklGRkQAAABXQVZFZm10IBAAAAABAAEAiBUAAIgVAAABAAgAZGF0YSAAAAB/bZR2dpJ5dH+bZX+Xan+KiG5/jXl6f4l9en+Cgnx/fw=="),md=!1;const mc=document.getElementById("mc"),ct=document.getElementById("t"),rs=20,cs=20,g=document.getElementById("g");g.style.gridTemplateRows="repeat(20, 30px)",g.style.gridTemplateColumns="repeat(20, 30px)";const cells=Array.from({length:20},(e,t)=>Array.from({length:20},(e,a)=>{let n=document.createElement("div");return n.classList.add("c"),n.addEventListener("click",()=>n.classList.toggle("a")),n.dataset.r=t,n.dataset.c=a,g.appendChild(n),n}));function hb(e){e.target.dataset.r&&e.target.dataset.c&&(e.target.classList.add("a"),au.pause(),au.currentTime=0,au.play())}function ng(){let e=cells.map((e,t)=>e.map((e,a)=>{let n=e.classList.contains("a"),s=ga(t,a);return!!(n&&[2,3].includes(s))||!n&&3===s}));cells.forEach((t,a)=>t.forEach((t,n)=>t.classList.toggle("a",e[a][n])))}function ga(e,t){let a=0;for(let n of[-1,0,1])for(let s of[-1,0,1]){if(0===n&&0===s)continue;let l=e+n,c=t+s;l>=0&&l<20&&c>=0&&c<20&&cells[l][c].classList.contains("a")&&a++}return a}g.addEventListener("mousedown",e=>{md=!0,hb(e)}),document.addEventListener("mousemove",e=>{var t=ct.getBoundingClientRect();mc.setAttribute("cx",e.clientX+window.pageXOffset-t.left),mc.setAttribute("cy",e.clientY+window.pageYOffset-t.top+document.body.getBoundingClientRect().top),md&&hb(e)}),g.addEventListener("mouseup",()=>{md=!1}),setInterval(ng,500);
   </script>
 </body>
 </html>

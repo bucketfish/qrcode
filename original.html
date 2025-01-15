@@ -1,16 +1,8 @@
 <!DOCTYPE html>
 <html>
-<body>
+<body style="font-family:Verdana;display:flex;flex-flow:column;align-items:center;background:#8499B1;">
   <style>
-    body {
-      font-family: Verdana;
-      display:flex;
-      flex-flow:column;
-      align-items:center;
-      padding-top: 80px;
-      background: #8499B1;
-    }
-    #gd {
+    #g {
       display: grid;
     }
     .c {
@@ -18,58 +10,86 @@
       height: 25px;
       border: 1px solid #A5C4D4;
     }
-    .alive {background: #A5C4D4;}
+    .a {background: #A5C4D4;}
+    #t, #m {
+      pointer-events: none;
+      position: absolute;
+      width: 800px;
+      height: 800px;
+    }
+    #t {
+      backdrop-filter: blur(10px);
+      mask: url(#mask);
+      margin: -50px;
+    }
 
   </style>
-  <h1>conway's game of life :)</h1>
-  <div id="gd"></div>
+  <h1 style="z-index: 9;">conway's game of life :)</h1>
+  <div>
+    <div id="t"></div>
+    <div id="g"></div>
+  </div>
+
+  <svg id="m">
+  <defs>
+    <radialGradient id="gr">
+      <stop offset="20%" stop-color="black" />
+      <stop offset="99%" stop-color="white" />
+    </radialGradient>
+    <mask id="mask" width="100%" height="100%">
+      <rect width="100%" height="100%" fill="white"/>
+      <circle id="mc" r="200" fill="url('#gr')"/>
+    </mask>
+  </defs>
+</svg>
+
+
   <script>
-    var audio = new Audio("data:audio/wav;base64,UklGRkQAAABXQVZFZm10IBAAAAABAAEAiBUAAIgVAAABAAgAZGF0YSAAAAB/bZR2dpJ5dH+bZX+Xan+KiG5/jXl6f4l9en+Cgnx/fw==")
-    const rs = 20, cs = 20, gd = document.getElementById('gd')
-    var md = false
-    gd.style.gridTemplateRows = `repeat(${rs}, 30px)`
-    gd.style.gridTemplateColumns = `repeat(${cs}, 30px)`
-    const cells = []
-    for (let row = 0; row < rs; row++) {
-      const rC = []
-      for (let col = 0; col < cs; col++) {
-        const c = document.createElement('div')
-        c.classList.add('c')
-        c.addEventListener('click', () => {c.classList.toggle('alive')})
-        c.dataset.r = row
-        c.dataset.c = col
-        gd.appendChild(c)
-        rC.push(c)
-      }
-      cells.push(rC)
-    }
-    function hb(event){if(event.target.dataset.r && event.target.dataset.c){
-      event.target.classList.add('alive')
-      audio.pause()
-      audio.currentTime = 0
-      audio.play()
+    var au = new Audio("data:audio/wav;base64,UklGRkQAAABXQVZFZm10IBAAAAABAAEAiBUAAIgVAAABAAgAZGF0YSAAAAB/bZR2dpJ5dH+bZX+Xan+KiG5/jXl6f4l9en+Cgnx/fw=="), md=false
+    const mc = document.getElementById('mc'), ct = document.getElementById('t'), rs = 20, cs = 20, g = document.getElementById('g')
+
+    g.style.gridTemplateRows = `repeat(${rs}, 30px)`
+    g.style.gridTemplateColumns = `repeat(${cs}, 30px)`
+
+    const cells = Array.from({length: rs}, (_, r) => Array.from({length: cs}, (_, co) => {
+      const c = document.createElement('div')
+      c.classList.add('c')
+      c.addEventListener('click', () => c.classList.toggle('a'))
+      c.dataset.r = r; c.dataset.c = co
+      g.appendChild(c)
+      return c
+    }))
+
+    function hb(e){if(e.target.dataset.r && e.target.dataset.c){
+      e.target.classList.add('a')
+      au.pause()
+      au.currentTime = 0
+      au.play()
     }}
-    gd.addEventListener('mousedown', (event) => {
+    g.addEventListener('mousedown', (e) => {
         md = true
-        hb(event)
+        hb(e)
     })
-    gd.addEventListener('mousemove', (event) => {if (md) hb(event)})
-    gd.addEventListener('mouseup', () => {md = false})
+    document.addEventListener('mousemove', (e) => {
+      var r = ct.getBoundingClientRect();
+      mc.setAttribute('cx', e.clientX + window.pageXOffset - r.left);
+      mc.setAttribute('cy', e.clientY + window.pageYOffset - r.top + document.body.getBoundingClientRect().top);
+
+      if (md) hb(e);
+    })
+    g.addEventListener('mouseup', () => {md = false})
+
     function ng() {
-      const newStates = cells.map((row, r) =>
-        row.map((cell, c) => {
-          const alive = cell.classList.contains('alive');
-          const neighbors = ga(r, c);
-          if (alive && (neighbors === 2 || neighbors === 3)) return true;
-          if (!alive && neighbors === 3) return true;
+      const ns = cells.map((row, r) =>
+        row.map((ce, c) => {
+          const a = ce.classList.contains('a');
+          const n = ga(r, c);
+          if (a && [2, 3].includes(n)) return true;
+          if (!a && n === 3) return true;
           return false;
-        })
-      )
+        }))
       cells.forEach((row, r) =>
-        row.forEach((cell, c) => {
-          if (newStates[r][c]) {
-            cell.classList.add('alive')
-          } else {cell.classList.remove('alive')}})
+        row.forEach((ce, c) => ce.classList.toggle('a', ns[r][c]))
       )}
     function ga(r, c) {
       let count = 0;
@@ -78,7 +98,7 @@
           if (dr === 0 && dc === 0) continue;
           const nr = r + dr, nc = c + dc;
           if (nr >= 0 && nr < rs && nc >= 0 && nc < cs) {
-            if (cells[nr][nc].classList.contains('alive')) { count++}
+            if (cells[nr][nc].classList.contains('a')) {count++}
           }}}
       return count
     }
