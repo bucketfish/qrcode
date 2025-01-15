@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <style>
+    body {
+      font-family: Verdana;
+      display:flex;
+      flex-flow:column;
+      align-items:center;
+      padding-top: 80px;
+      background: #8499B1;
+    }
+    #gd {
+      display: grid;
+    }
+    .c {
+      width: 25px;
+      height: 25px;
+      border: 1px solid #A5C4D4;
+    }
+    .alive {background: #A5C4D4;}
+
+  </style>
+  <h1>conway's game of life :)</h1>
+  <div id="gd"></div>
+
+  <script>
+  var audio=new Audio("data:audio/wav;base64,UklGRkQAAABXQVZFZm10IBAAAAABAAEAiBUAAIgVAAABAAgAZGF0YSAAAAB/bZR2dpJ5dH+bZX+Xan+KiG5/jXl6f4l9en+Cgnx/fw==");const rs=20,cs=20,gd=document.getElementById("gd");var md=!1;gd.style.gridTemplateRows="repeat(20, 30px)",gd.style.gridTemplateColumns="repeat(20, 30px)";const cells=[];for(let row=0;row<20;row++){let e=[];for(let t=0;t<20;t++){let a=document.createElement("div");a.classList.add("c"),a.addEventListener("click",()=>{a.classList.toggle("alive")}),a.dataset.r=row,a.dataset.c=t,gd.appendChild(a),e.push(a)}cells.push(e)}function hb(e){e.target.dataset.r&&e.target.dataset.c&&(e.target.classList.add("alive"),audio.pause(),audio.currentTime=0,audio.play())}function ng(){let e=cells.map((e,t)=>e.map((e,a)=>{let s=e.classList.contains("alive"),l=ga(t,a);return!!s&&(2===l||3===l)||!s&&3===l}));cells.forEach((t,a)=>t.forEach((t,s)=>{e[a][s]?t.classList.add("alive"):t.classList.remove("alive")}))}function ga(e,t){let a=0;for(let s of[-1,0,1])for(let l of[-1,0,1]){if(0===s&&0===l)continue;let d=e+s,i=t+l;d>=0&&d<20&&i>=0&&i<20&&cells[d][i].classList.contains("alive")&&a++}return a}gd.addEventListener("mousedown",e=>{md=!0,hb(e)}),gd.addEventListener("mousemove",e=>{md&&hb(e)}),gd.addEventListener("mouseup",()=>{md=!1}),setInterval(ng,500);
+  </script>
+</body>
+</html>
